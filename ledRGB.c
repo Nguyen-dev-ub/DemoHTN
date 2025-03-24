@@ -4,6 +4,7 @@
 #include <wiringPiSPI.h>
 #include <stdint.h> 
 #include <softPwm.h>
+
 #define spi0 0
 #define red 11
 #define green 12
@@ -13,6 +14,7 @@
 #define bt3 18
 #define bt4 16
 #define PWM_MAX 100
+
 void fadeLED(int pin) {
     int delayTime = 20;  // Độ trễ giữa các mức (20ms)
 

@@ -29,7 +29,7 @@
 
     };
 
-    //doc du lieu tu PU6050
+    //doc du lieu tu MPU
     int16_t read_sensor(unsigned char sensor)
     {
         int16_t high, low, data;
