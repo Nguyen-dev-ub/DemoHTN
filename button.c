@@ -4,15 +4,16 @@
 #include <unistd.h>
 #include <wiringPiSPI.h>
 #include <stdint.h> 
+#include <softPwm.h>
 #define spi0 0
-#define red 8
-#define green 10
-#define blue 12
-#define bt4 16
+#define red 11
+#define green 12
+#define blue 13
 #define bt1 15
 #define bt2 22
 #define bt3 18
 #define bt4 16
+#define PWM_MAX 100
 int num;
 uint8_t buff[2];
 
@@ -125,6 +126,23 @@ void init_max7219(void){
     send_data(0x0F, 0);
     send_data(0x0C, 1);
 }
+// Hàm tăng sáng dần và giảm sáng dần trong 2 giây
+void fadeLED(int pin) {
+    int delayTime = 20;  // Độ trễ giữa các mức (20ms)
+
+    // Sáng dần trong 2 giây
+    for (int i = 0; i <= PWM_MAX; i++) {
+        softPwmWrite(pin, i);
+        delay(delayTime);
+    }
+
+    // Tối dần trong 2 giây
+    for (int i = PWM_MAX; i >= 0; i--) {
+        softPwmWrite(pin, i);
+        delay(delayTime);
+    }
+}
+
 int main(void)
 {
     wiringPiSetupPhys();
@@ -138,10 +156,16 @@ int main(void)
     pinMode(bt2,INPUT);
     pinMode(bt3,INPUT);
     pinMode(bt4,INPUT);
+
     //muc hoat dong LOW
     digitalWrite(red,LOW);
     digitalWrite(green,LOW);
     digitalWrite(blue,LOW);
+
+    //muc hoat dong cua PWM tu thap den cao voi muc sang toi da la 100
+    softPwmCreate(red, 0, 100);
+    softPwmCreate(green, 0, 100);
+    softPwmCreate(blue, 0, 100);
     while (1==1)
     {
         if (digitalRead(bt1)==1)
@@ -166,6 +190,29 @@ int main(void)
             displayLetter(ch);  
             sleep(1); 
             }
+        /* Nut nhan sang tu thap den cao (25-100)
+            if (digitalRead(bt1) == 1) {  // Nhấn SBT1 (Sáng yếu nhất)
+                softPwmWrite(red, 25);
+                
+            }
+            else if (digitalRead(bt2) == 1) {  // Nhấn BT2 (50%)
+                softPwmWrite(red, 50);
+                
+            }
+            else if (digitalRead(bt3) == 1) {  // Nhấn BT3 (75%)
+                softPwmWrite(red, 75);
+                
+            }
+            else if (digitalRead(bt4) == 1) {  // Nhấn BT4 (Sáng mạnh nhất)
+                softPwmWrite(red, 100);
+                
+            }
+            else {  // *** Nếu không nhấn nút nào -> LED TẮT ***
+                softPwmWrite(red, 0);
+                // softPwmWrite(green, 0);
+                // softPwmWrite(blue, 0);
+            }
+        */
     }
     return(0);
     

@@ -2,8 +2,7 @@
 #include <unistd.h>
 #include <wiringPiSPI.h>
 #include <stdint.h>  
-#include <stdlib.h>
-#include <math.h>
+
 #define spi0     0
 
 uint8_t buff[2];
@@ -14,6 +13,9 @@ void send_data(uint8_t address, uint8_t data){
     wiringPiSPIDataRW(spi0, buff, 2);
 }
 
+void send_number_with_dot(uint8_t position, uint8_t num) {
+    send_data(position, number[num] & 0x7F | 0x80); // Bật DP cho số tương ứng
+}
 
 
 void init_max7219(void){
@@ -33,37 +35,14 @@ int main(void){
     wiringPiSPISetup(spi0, 4000000);
     printf("Setup ma7219\n");
     init_max7219();
-   while(1==1){
+    printf("display student number \n");
     // 22146089
-    float n= rand() %1000+1;
-    
-    float m= abs(n);printf("m= %f",m);
+    // uint8_t mssv[8]={2,2,3,4,6,2,2,1};
+    // for(int i=0; i<8; i++){
+    //     send_number_with_dot(i+1,mssv[7-i]);    
+    // }
 
-    float p= abs((n*10)); int cc=(int)p % 10; 
+    send_data(7,so[5]);  
 
-    uint8_t bee[8]={0,0,0,0,0,0,0,cc}; 
-
-    bee[8] = fmod((m*10),10);
-
-    for (int i = 6; i>=0; i-- )
-    {
-        if (n < 0){bee[i-1]=10;}
-        
-        bee[i]= (int)m%10;
-        m=m/10;
-        if (m==0) break;
-    
-
-    }
-    bee[6]=(bee[6] | 0x80);
-    sleep(1);
-    uint8_t mssv[8]={2|0x80,0,1,10,1,9,7,5};
-    for(int i=0; i<8; i++){
-        send_data(i+1,bee[7-i]);    
-    }
-   }
     return 0;
-    }
-   
-
-    
+}
