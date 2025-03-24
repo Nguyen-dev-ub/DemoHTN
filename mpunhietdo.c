@@ -14,18 +14,28 @@
 #define Acc_config      28  // 0x1C          
 #define Temp            65  // 0x41
 #define spi0            0
+#define NUM_SAMPLES     5
 
 uint8_t buff[2];
 int mpu;
 
-int16_t read_temp(unsigned char sensor)
-{
-    int16_t high, low, data;
-    high = wiringPiI2CReadReg8 (mpu,0x41);
-    low  =  wiringPiI2CReadReg8 (mpu,0x42);
-    data = (high<<8) | low;
-    return data;
+float read_temperature() {
+    int16_t high = wiringPiI2CReadReg8(mpu, Temp);   // Đọc byte cao
+    int16_t low  = wiringPiI2CReadReg8(mpu, Temp+1); // Đọc byte thấp
+    int16_t temp_raw = (high << 8) | low;  // Ghép 2 byte lại
+
+    return temp_raw / 340.0 + 36.53;  // Chuyển đổi sang °C
 }
+
+float read_temperature_filtered() {
+    float sum = 0;
+    for (int i = 0; i < NUM_SAMPLES; i++) {
+        sum += read_temperature();
+        delay(10);  // Đợi một chút để tránh đọc quá nhanh
+    }
+    return sum / NUM_SAMPLES;  // Lấy trung bình
+}
+
 
 void send_data(uint8_t address, uint8_t data) {
     buff[0] = address;
@@ -33,7 +43,7 @@ void send_data(uint8_t address, uint8_t data) {
     wiringPiSPIDataRW(spi0, buff, 2);
 }
 
-void Init(void)
+void Init_6050(void)
     {
     // sample rate 500Hz, cách tính sample rate = 8000/(1+X)=500 => x=15
     // trong datasheet, gyro output rate =8kHz
@@ -59,6 +69,20 @@ void init_max7219(void){
     send_data(0x0F, 0);
     send_data(0x0C, 1);
     }
+    void display_number(float num) {
+        int integer_part = (int)num;  // Phần nguyên
+        int decimal_part = (int)(num * 100) % 100; // Lấy 2 số thập phân
+    
+        uint8_t digits[8] = {0};
+        digits[7] = integer_part / 10; // Hàng chục
+        digits[6] = integer_part % 10 | 0x80; // Hàng đơn vị (có dấu chấm thập phân)
+        digits[5] = decimal_part / 10; // Phần thập phân hàng chục
+        digits[4] = decimal_part % 10; // Phần thập phân hàng đơn vị
+    
+        for (int i = 0; i < 8; i++) {
+            send_data(i + 1, digits[i]);
+        }
+    }
 
 int main(void)
 {
@@ -74,8 +98,9 @@ int main(void)
     while(1)
     {
     // đọc giá trị đo nhiệt độ
-    
-    printf(....);
+    float temp = read_temperature_filtered();
+    display_number(temp);
+    printf("Temperature: %.2f°C\n", temp);
     delay(1000);
     }
 
