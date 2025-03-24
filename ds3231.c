@@ -16,6 +16,8 @@ int main(void)
     wiringPiI2CWriteReg8(ds,0x01,mm);
     wiringPiI2CWriteReg8(ds,0x01,hh);
 
+    while(1);
+
     return 0;
     
 }
