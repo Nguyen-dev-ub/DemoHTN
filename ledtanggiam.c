@@ -1,3 +1,5 @@
+//tang giam do sang cua led
+
 #include <wiringPi.h>
 #include <softPwm.h>
 #include <stdio.h>
@@ -41,7 +43,7 @@ void loop() {
     while (1) {
         if (digitalRead(BT1) == 1) {  // Nhấn BT1 để chuyển màu
             color = (color + 1) % 4;  
-            delay(300);  // Chống dội nút
+            delay(300);  
         } 
 
         if (digitalRead(BT2) == 1) {  // Nhấn BT2 để tăng sáng
