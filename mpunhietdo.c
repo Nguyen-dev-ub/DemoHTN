@@ -19,6 +19,16 @@
 uint8_t buff[2];
 int mpu;
 
+// Chuyển đổi Decimal sang BCD
+uint8_t decToBcd(int val) {
+    return (val / 10 * 16) + (val % 10);
+}
+
+// Chuyển đổi BCD sang Decimal
+int bcdToDec(uint8_t val) {
+    return (val / 16 * 10) + (val % 16);
+}
+
 float read_temperature() {
     int16_t high = wiringPiI2CReadReg8(mpu, Temp);   // Đọc byte cao
     int16_t low  = wiringPiI2CReadReg8(mpu, Temp+1); // Đọc byte thấp
@@ -74,10 +84,10 @@ void init_max7219(void){
         int decimal_part = (int)(num * 100) % 100; // Lấy 2 số thập phân
     
         uint8_t digits[8] = {0};
-        digits[7] = integer_part / 10; // Hàng chục
-        digits[6] = integer_part % 10 | 0x80; // Hàng đơn vị (có dấu chấm thập phân)
-        digits[5] = decimal_part / 10; // Phần thập phân hàng chục
-        digits[4] = decimal_part % 10; // Phần thập phân hàng đơn vị
+        digits[7] = integer_part / 10; 
+        digits[6] = integer_part % 10 | 0x80; 
+        digits[5] = decimal_part / 10; 
+        digits[4] = decimal_part % 10; 
     
         for (int i = 0; i < 8; i++) {
             send_data(i + 1, digits[i]);
@@ -86,12 +96,12 @@ void init_max7219(void){
 
 int main(void)
 {
-    //setup giao tiep I2C
+    
     wiringPiSetupPhys();
     wiringPiSetup();
     mpu = wiringPiI2CSetup(0x68); //chân ID0 mức 0 là ox68
     wiringPiSPISetup(spi0, 4000000);
-    // thiết lập chết độ cho mpu60504
+    
     Init_6050();
     init_max7219();
 

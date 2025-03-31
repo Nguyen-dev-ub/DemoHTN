@@ -46,42 +46,47 @@ int main(void)
     pinMode(bt3,INPUT);
     pinMode(bt4,INPUT);
     
-    softPwmCreate(red, 0, 1023);
-    softPwmCreate(green, 0, 1023);
-    softPwmCreate(blue, 0, 1023);
+    // //nut nhan cac led
+    // softPwmCreate(red, 0, 1023);
+    // softPwmCreate(green, 0, 1023);
+    // softPwmCreate(blue, 0, 1023);
+    
 
-    /* led sang dan
+    //led sang dan
     softPwmCreate(red, 0, PWM_MAX);
     softPwmCreate(green, 0, PWM_MAX);
     softPwmCreate(blue, 0, PWM_MAX);
-    */
+    
+    
 
     while (1==1)
     {
-        if (digitalRead(bt1) == 1) {
-            softPwmWrite(red, 512);  // PWM 50%
-        } else {
-            softPwmWrite(red, 0);  // Tắt LED
-        }
+        
+        // if (digitalRead(bt1) == 1) {
+        //     softPwmWrite(red, 512);  // PWM 50%
+        // } else {
+        //     softPwmWrite(red, 0);  // Tắt LED
+        // }
 
-        if (digitalRead(bt2) == 1) {
-            softPwmWrite(green, 512);
-        } else {
-            softPwmWrite(green, 0);
-        }
+        // if (digitalRead(bt2) == 1) {
+        //     softPwmWrite(green, 512);
+        // } else {
+        //     softPwmWrite(green, 0);
+        // }
 
-        if (digitalRead(bt3) == 1) {
-            softPwmWrite(blue, 512);
-        } else {
-            softPwmWrite(blue, 0);
-        }
-        delay(10);  // th
+        // if (digitalRead(bt3) == 1) {
+        //     softPwmWrite(blue, 512);
+        // } else {
+        //     softPwmWrite(blue, 0);
+        // }
+        // delay(10);  // th
+        
 
-        /*led sang dan
+        //led sang dan
         fadeLED(red);   // Sáng dần, tối dần LED đỏ
         fadeLED(green); // Sáng dần, tối dần LED xanh lá
         fadeLED(blue);  // Sáng dần, tối dần LED xanh dương
-        */
+        
     }
 
     return(0);

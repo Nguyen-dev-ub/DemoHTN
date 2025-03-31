@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <math.h>
+#include <wiringPiSPI.h>
 
 #define M_PI 3.14159265358979323846
 
@@ -127,9 +128,16 @@ void display_values(float Ax, float Ay, float Az) {
             float Ax = (float)read_sensor(Acc_X) / 4096.0;
             float Ay = (float)read_sensor(Acc_Y) / 4096.0;
             float Az = (float)read_sensor(Acc_Z) / 4096.0;
+
+            float pitch = atan2(Ax,sqrt(pow(Ay,2)+pow(Az,2)))*180/M_PI;
+            float roll  = atan2(Ay,sqrt(pow(Ax,2)+pow(Az,2)))*180/M_PI;
+            float yaw   = atan2(Az,sqrt(pow(Ax,2)+pow(Ay,2)))*180/M_PI;
+
     
             display_values(Ax, Ay, Az);
             delay(1000);
+            printf("Ax = %.4f,          Ay = %.4f,          Az = ab%.4f\n", Ax, Ay, Az);
+            printf("        Pitch = %.4f,         Roll = %.4f\n", pitch, roll);
         }
     
         return 0;
